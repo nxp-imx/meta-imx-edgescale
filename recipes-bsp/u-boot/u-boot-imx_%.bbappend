@@ -6,8 +6,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 UBOOT_CONFIG_mx8mm = "fspi"
 UBOOT_CONFIG_mx6 = "sd"
 DEPENDS_append = " u-boot-mkimage-native"
-UBOOT_MAKE_TARGET_mx6 = ""
-UBOOT_BINARY_mx6 = "u-boot-dtb.bin"
+UBOOT_MAKE_TARGET_mx6 = "${@bb.utils.contains('DISTRO_FEATURES', 'ota', '', 'u-boot.imx', d)}"
+UBOOT_BINARY_mx6 = "${@bb.utils.contains('DISTRO_FEATURES', 'ota', 'u-boot-dtb.bin', 'u-boot.imx', d)}"
 
 MX8MM_PATCHES = "file://0001-imx8mq-spl-Add-OTA-status-check.patch \
                  file://0002-imx8mq-spl-Add-mmc-write-support.patch \
@@ -25,8 +25,10 @@ MX8MM_PATCHES = "file://0001-imx8mq-spl-Add-OTA-status-check.patch \
 SRC_URI_append_mx8m =  " ${@bb.utils.contains('DISTRO_FEATURES', 'ota', '${MX8MM_PATCHES}', '', d)}"
 
 do_deploy_append_mx6 () {
-    uboot-mkimage -A ARM -T firmware -C none -O u-boot -a 0x17800000 -e 0x17800000 -d ${B}/${config}/u-boot-dtb.bin  ${B}/${config}/u-boot-dtb.img 
-    install -m 0777 ${B}/${config}/u-boot-dtb.img  ${DEPLOYDIR}
+    if ${@bb.utils.contains('DISTRO_FEATURES','ota','true','false',d)}; then
+        uboot-mkimage -A ARM -T firmware -C none -O u-boot -a 0x17800000 -e 0x17800000 -d ${B}/${config}/u-boot-dtb.bin  ${B}/${config}/u-boot-dtb.img
+        install -m 0777 ${B}/${config}/u-boot-dtb.img  ${DEPLOYDIR}
+    fi
 }
 
 
