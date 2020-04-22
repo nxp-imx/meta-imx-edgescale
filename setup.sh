@@ -23,7 +23,7 @@ if [ ! -e $1/conf/local.conf.sample ]; then
     if [ "$MACHINE" = "" ]; then
         MACHINE=imx8qmmek
     fi
-    EULA=$EULA DISTRO=$DISTRO MACHINE=$MACHINE . ./fsl-setup-release.sh -b $@
+    EULA=$EULA DISTRO=$DISTRO MACHINE=$MACHINE . ./imx-setup-release.sh -b $@
 
     echo "# layers for Edgescale" >> conf/bblayers.conf
     echo "BBLAYERS += \"\${BSPDIR}/sources/meta-cloud-services\"" >> conf/bblayers.conf
